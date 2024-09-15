@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"ergo.services/ergo/act"
 	"ergo.services/ergo/gen"
-	"github.com/jaztec/ergo-poc/pkg/messages"
 	"net/http"
 )
 
@@ -47,15 +46,8 @@ func (w *Worker) HandleGet(_ gen.PID, writer http.ResponseWriter, req *http.Requ
 func (w *Worker) HandlePost(_ gen.PID, writer http.ResponseWriter, req *http.Request) error {
 	writer.Header().Set("Content-Type", "application/json")
 
-	body := make([]byte, 1024)
-
-	n, err := req.Body.Read(body)
-	if n == 0 && err != nil {
-		return handleError(writer, err)
-	}
-
-	var create messages.CreateTask
-	if err = json.Unmarshal(body[:n], &create); err != nil {
+	create, err := parsePostRequest(req)
+	if err != nil {
 		return handleError(writer, err)
 	}
 
@@ -78,15 +70,8 @@ func (w *Worker) HandlePost(_ gen.PID, writer http.ResponseWriter, req *http.Req
 func (w *Worker) HandlePut(_ gen.PID, writer http.ResponseWriter, req *http.Request) error {
 	writer.Header().Set("Content-Type", "application/json")
 
-	body := make([]byte, 1024)
-
-	n, err := req.Body.Read(body)
-	if n == 0 && err != nil {
-		return handleError(writer, err)
-	}
-
-	var update messages.UpdateTask
-	if err = json.Unmarshal(body[:n], &update); err != nil {
+	update, err := parsePutRequest(req)
+	if err != nil {
 		return handleError(writer, err)
 	}
 

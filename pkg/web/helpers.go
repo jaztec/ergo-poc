@@ -55,6 +55,38 @@ func parseGetRequest(req *http.Request) (any, error) {
 	return msg, nil
 }
 
+func parsePostRequest(req *http.Request) (any, error) {
+	body := make([]byte, 1024)
+
+	n, err := req.Body.Read(body)
+	if n == 0 && err != nil {
+		return nil, err
+	}
+
+	var create messages.CreateTask
+	if err = json.Unmarshal(body[:n], &create); err != nil {
+		return nil, err
+	}
+
+	return create, nil
+}
+
+func parsePutRequest(req *http.Request) (any, error) {
+	body := make([]byte, 1024)
+
+	n, err := req.Body.Read(body)
+	if n == 0 && err != nil {
+		return nil, err
+	}
+
+	var create messages.UpdateTask
+	if err = json.Unmarshal(body[:n], &create); err != nil {
+		return nil, err
+	}
+
+	return create, nil
+}
+
 func handleError(w http.ResponseWriter, err error) error {
 	if err == nil {
 		return nil
